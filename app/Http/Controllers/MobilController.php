@@ -47,24 +47,30 @@ class MobilController extends Controller
     }
 
     public function update($id_mobil, Request $request){
-        $request->validate([
-            'id_penjual' => 'required',
-            'nama_mobil' => 'required',
-            'harga' => 'required',
-            'jenis' => 'required',
-            'tahun' => 'required',
-            'status' => 'required',
-        ]);
-        DB::update('UPDATE mobil SET id_penjual = :id_penjual, nama_mobil = :nama_mobil, harga = :harga, jenis = :jenis, tahun = :tahun, status = :status WHERE id = :id_mobil',[
-            'id_mobil' => $id_mobil,
-            'id_penjual' => $request->id_penjual,
-            'nama_mobil' => $request->nama_mobil,
-            'harga' => $request->harga,
-            'jenis' => $request->jenis,
-            'tahun' => $request->tahun,
-            'status' => $request->status
-        ]);
-        return redirect('/mobil');
+        $penjual = DB::select('select * from penjual where id = :id_penjual', ['id_penjual' => $request->id_penjual]);
+        if(count($penjual) == 0){
+            return redirect('/mobil')->with('error', 'Data gagal diubah, Penjual tidak ditemukan');
+        } else{
+            $request->validate([
+                'id_penjual' => 'required',
+                'nama_mobil' => 'required',
+                'harga' => 'required',
+                'jenis' => 'required',
+                'tahun' => 'required',
+                'status' => 'required',
+            ]);
+            DB::update('UPDATE mobil SET id_penjual = :id_penjual, nama_mobil = :nama_mobil, harga = :harga, jenis = :jenis, tahun = :tahun, status = :status WHERE id = :id_mobil',[
+                'id_mobil' => $id_mobil,
+                'id_penjual' => $request->id_penjual,
+                'nama_mobil' => $request->nama_mobil,
+                'harga' => $request->harga,
+                'jenis' => $request->jenis,
+                'tahun' => $request->tahun,
+                'status' => $request->status
+            ]);
+            return redirect('/mobil')->with('success', 'Data berhasil diubah');
+        }
+        
     }
 
     public function destroy($id_mobil){
@@ -74,7 +80,9 @@ class MobilController extends Controller
     }
 
     public function cari(Request $re){
-        $daftar  = DB::table('carlist')->where('nama_mobil', '=',$re->cari)->get();
+        $daftar  = DB::table('mobil')->join('penjual', 'mobil.id_penjual','=','penjual.id')->select('mobil.*', 'penjual.*')->where('nama_mobil', 'LIKE','%'.$re->cari.'%')->get();
+
+        // $daftar  = DB::table('mobil')->where('nama_mobil', 'LIKE', '%'.$re->cari.'%')->get();
         return View('welcome',compact(['daftar']));
     }
 
