@@ -9,32 +9,39 @@ use Illuminate\Support\Facades\DB;
 class MobilController extends Controller
 {
     public function index(){
-        $mobil  = DB::select('select * from mobil where softDelete = 0');
+        $mobil  = DB::select('select * from mobil');
         return View('mobil.mobil',compact(['mobil']));
     } 
 
     public function store(Request $request){
-        $request->validate([
-            'id_penjual' => 'required',
-            'nama_mobil' => 'required',
-            'harga' => 'required',
-            'jenis' => 'required',
-            'tahun' => 'required',
-            'isSold' => 'required',
-        ]);
-        DB::insert('INSERT INTO mobil(id_penjual, nama_mobil, harga, jenis, tahun, isSold) VALUES (:id_penjual, :nama_mobil, :harga, :jenis, :tahun, :isSold)', [
-            'id_penjual' => $request->id_penjual,
-            'nama_mobil' => $request->nama_mobil,
-            'harga' => $request->harga,
-            'jenis' => $request->jenis,
-            'tahun' => $request->tahun,
-            'isSold' => $request->isSold
-        ]);
-        return redirect('/mobil');
+        $penjual = DB::select('select * from penjual where id = :id_penjual', ['id_penjual' => $request->id_penjual]);
+
+        if(count($penjual) == 0){
+            return redirect('/mobil')->with('error', 'Penjual tidak ditemukan');
+        } else{
+            $request->validate([
+                'id_penjual' => 'required',
+                'nama_mobil' => 'required',
+                'harga' => 'required',
+                'jenis' => 'required',
+                'tahun' => 'required',
+                'status' => 'required',
+            ]);
+            DB::insert('INSERT INTO mobil(id_penjual, nama_mobil, harga, jenis, tahun, status) VALUES (:id_penjual, :nama_mobil, :harga, :jenis, :tahun, :status)', [
+                'id_penjual' => $request->id_penjual,
+                'nama_mobil' => $request->nama_mobil,
+                'harga' => $request->harga,
+                'jenis' => $request->jenis,
+                'tahun' => $request->tahun,
+                'status' =>$request->status
+            ]);
+            return redirect('/mobil')->with('success', 'Mobil berhasil ditambahkan');
+        }
+       
     }   
 
     public function edit($id_mobil){
-        $mobil = mobil::where('id_mobil',$id_mobil)->first();
+        $mobil = mobil::where('id',$id_mobil)->first();
     
         return View('mobil.edit',compact(['mobil']));
     }
@@ -46,22 +53,23 @@ class MobilController extends Controller
             'harga' => 'required',
             'jenis' => 'required',
             'tahun' => 'required',
-            'isSold' => 'required',
+            'status' => 'required',
         ]);
-        DB::update('UPDATE mobil SET id_penjual = :id_penjual, nama_mobil = :nama_mobil, harga = :harga, jenis = :jenis, tahun = :tahun, isSold = :isSold WHERE id_mobil = :id_mobil',[
+        DB::update('UPDATE mobil SET id_penjual = :id_penjual, nama_mobil = :nama_mobil, harga = :harga, jenis = :jenis, tahun = :tahun, status = :status WHERE id = :id_mobil',[
             'id_mobil' => $id_mobil,
             'id_penjual' => $request->id_penjual,
             'nama_mobil' => $request->nama_mobil,
             'harga' => $request->harga,
             'jenis' => $request->jenis,
             'tahun' => $request->tahun,
-            'isSold' => $request->isSold
+            'status' => $request->status
         ]);
         return redirect('/mobil');
     }
 
     public function destroy($id_mobil){
-        DB::delete('DELETE FROM mobil WHERE id_mobil = :id_mobil', ['id_mobil' => $id_mobil]);
+        DB::delete('DELETE FROM mobil WHERE id = :id_mobil', ['id_mobil' => $id_mobil]);
+        DB::delete('DELETE FROM pembeli WHERE id_mobil = :id_mobil', ['id_mobil' => $id_mobil] );
         return redirect('/mobil');
     }
 
@@ -75,7 +83,7 @@ class MobilController extends Controller
         return redirect('/mobil');
     }
     public function restore(){
-        DB::table('mobil')->update(['softDelete' => '0']);
+        // DB::table('mobil')->update(['softDelete' => '0']);
         return redirect('/mobil');
     }
 }

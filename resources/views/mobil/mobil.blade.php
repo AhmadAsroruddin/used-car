@@ -9,7 +9,16 @@
 
                 <div class="card-body">
                 <div class="container mb-3">
-               
+                    @if(session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                    @if(session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
                     <h2>Add Mobil</h2>
                     <form action="mobil/store" method="POST">
                         @csrf
@@ -40,9 +49,9 @@
                         </div>
                         
                         
-                        <select name="isSold" class="form-select">
+                        <select name="status" class="form-select">
                             <option value="">Sudah Terjual atau belum?</option>
-                            <option value="Dijual">Dijual</option>
+                            <option value="dijual">Dijual</option>
                             <option value="terjual">Terjual</option>
                         </select><br>
                         <input type="submit" name="Submit" value="save" class="btn btn-primary">
@@ -62,23 +71,22 @@
                     </tr>
                     @foreach($mobil as $m)
                         <tr>
-                            <td>{{$m->id_mobil}}</td>
+                            <td>{{$m->id}}</td>
                             <td>{{$m->id_penjual}}</td>
                             <td>{{$m->nama_mobil}}</td>
                             <td>{{$m->harga}}</td>
                             <td>{{$m->jenis}}</td>
                             <td>{{$m->tahun}}</td>
-                            <td>{{$m->isSold}}</td>
+                            <td>{{$m->status}}</td>
                             <td>
                                 <div class="btn-group">
 
-                                    <a class="btn btn-warning" href="/mobil/{{$m->id_mobil}}/edit">Edit</a>
-                                    <form action="/mobil/{{$m->id_mobil}}" method="POST">
+                                    <a class="btn btn-warning" href="/mobil/{{$m->id}}/edit">Edit</a>
+                                    <form action="/mobil/{{$m->id}}" method="POST">
                                         @csrf
                                         @method('delete')
                                         <input class="btn btn-danger" type="submit" value="delete">
                                     </form>
-                                    <a class="btn btn-warning" href="/mobil/{{$m->id_mobil}}/soft">Soft Delete</a>
                                 </div>
                             </td>
                         </tr>

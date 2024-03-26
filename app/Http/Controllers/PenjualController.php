@@ -23,10 +23,10 @@ class PenjualController extends Controller
             'nomor_telpon' => $request->nomor_telpon,
             'alamat' => $request->alamat,
         ]);
-        return redirect('/penjual');
+        return redirect('/penjual')->with('success', 'Data berhasil ditambahkan');
     }   
     public function edit($id_penjual){
-        $penjual = penjual::where('id_penjual',$id_penjual)->first();
+        $penjual = penjual::where('id',$id_penjual)->first();
     
         return View('penjual.edit',compact(['penjual']));
     }
@@ -37,22 +37,23 @@ class PenjualController extends Controller
             'nomor_telpon' => 'required',
             'alamat' => 'required',
         ]);
-        DB::update('UPDATE penjual SET nama_penjual = :nama_penjual, nomor_telpon = :nomor_telpon, alamat = :alamat WHERE id_penjual = :id_penjual',[
+        DB::update('UPDATE penjual SET nama_penjual = :nama_penjual, nomor_telpon = :nomor_telpon, alamat = :alamat WHERE id = :id_penjual',[
             'id_penjual' => $id_penjual,
             'nama_penjual' => $request->nama_penjual,
             'nomor_telpon' => $request->nomor_telpon,
             'alamat' => $request->alamat
         ]);
-        return redirect('/penjual');
+        return redirect('/penjual')->with('success', 'Data berhasil dirubah');
     }
     public function destroy($id_penjual){
        
-        DB::delete('DELETE FROM penjual WHERE id_penjual = :id_penjual', ['id_penjual' => $id_penjual]);
-        return redirect('/penjual');
+        DB::delete('DELETE FROM penjual WHERE id = :id_penjual', ['id_penjual' => $id_penjual]);
+        DB::table('mobil')->where('id_penjual', $id_penjual)->delete();
+        return redirect('/penjual')->with('success', 'Data berhasil dihapus');
     }
 
-    public function soft($id_penjual){
-        $penjual = penjual::find($id_penjual);
+    public function soft($id){
+        $penjual = penjual::find($id);
     	$penjual->delete();
         return redirect('/penjual');
     }

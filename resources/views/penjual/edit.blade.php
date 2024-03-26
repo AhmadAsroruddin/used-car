@@ -5,8 +5,8 @@
 
     <div class="container mb-3">
         <h1>EDIT</h1>
-        <form action="/penjual/{{$penjual->id_penjual}}" method="POST">
-            @method('put')
+        <form action="/penjual/{{$penjual->id}}" method="POST">
+            @method('PUT')
             @csrf
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">Nama Penjual</label>

@@ -9,6 +9,16 @@
 
                 <div class="card-body">
                 <div class="container mb-3">
+                    @if(session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                    @if(session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
                     <h2>Add Penjual</h2>
                     <a href="/penjual/restoree">restore</a>
                     <form action="penjual/store" method="POST">
@@ -41,23 +51,19 @@
                     </tr>
                     @foreach($penjual as $m)
                         <tr>
-                            <td>{{$m->id_penjual}}</td>
+                            <td>{{$m->id}}</td>
                             <td>{{$m->nama_penjual}}</td>
                             <td>{{$m->nomor_telpon}}</td>
                             <td>{{$m->alamat}}</td>
                             <td>
                                 <div class="btn-group">
-                                    <a class="btn btn-warning" href="/penjual/{{$m->id_penjual}}/edit">Edit</a>
-                                    <form action="/penjual/{{$m->id_penjual}}" method="POST">
+                                    <a class="btn btn-warning" href="/penjual/{{$m->id}}/edit">Edit</a>
+                                    <form action="/penjual/{{$m->id}}" method="POST">
                                         @csrf
                                         @method('delete')
                                         <input class="btn btn-danger" type="submit" value="delete">
                                     </form>
-                                    <form action="/penjual/soft/{{$m->id_penjual}}" method="POST">
-                                        @csrf
-                                        @method('delete')
-                                        <input class="btn btn-warning" type="submit" value="soft">
-                                    </form>
+                                    
                                     
                                 </div>
                             </td>

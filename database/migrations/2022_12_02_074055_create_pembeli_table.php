@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('nama_pembeli');
             $table->string('id_mobil');
             $table->string('nomor_telpon');
-            $table->string('id_kredit');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -10,7 +10,7 @@
                 <div class="card-body">
                 <div class="container mb-3">
                     <h2>Edit Pembeli</h2>
-                    <form action="/pembeli/{{$pembeli->id_pembeli}}" method="POST">
+                    <form action="/pembeli/{{$pembeli->id}}" method="POST">
                         @method('put')
                         @csrf
                         <div class="mb-3">
@@ -27,11 +27,6 @@
                             <label for="exampleInputEmail1" class="form-label">Nomor Telpon</label>
                             <input value="{{$pembeli->nomor_telpon}}" type="text" class="form-control" name="nomor_telpon" id="exampleInputEmail1" placeholder="Nomor Telpon">
                         </div>
-                        <div class="mb-3">
-                            <label for="exampleInputEmail1" class="form-label">Kredit</label>
-                            <input value="{{$pembeli->id_kredit}}" type="text" class="form-control" name="id_kredit" id="exampleInputEmail1" placeholder="ID kredit">
-                        </div>
-
                         <input type="submit" name="Submit" value="save" class="btn btn-primary">
                     </form>
                 </div>

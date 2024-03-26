@@ -5,8 +5,8 @@
 
     <div class="container mb-3">
         <h1>EDIT</h1>
-        <form action="/mobil/{{$mobil->id_mobil}}" method="POST">
-            @method('put')
+        <form action="/mobil/{{$mobil->id}}" method="POST">
+            @method('PUT')
             @csrf
             <div class="mb-3">
                 <label for="exampleInputEmail1" class="form-label">ID Penjual</label>
@@ -33,12 +33,10 @@
                 <input value="{{$mobil->tahun}}" type="text"class="form-control" name="tahun" id="exampleInputEmail1" placeholder="Tahun">
                 
             </div>
-            
-            
-            <select name="isSold" class="form-select">
+            <select name="status" class="form-select">
                 <option value="">Sudah Terjual atau belum?</option>
-                <option value="Dijual" @if($mobil->isSold == "Dijual") selected @endif >Dijual</option>
-                <option value="terjual" @if($mobil->isSold == "Terjual") selected @endif>Terjual</option>
+                <option value="dijual" @if($mobil->status == "Dijual") selected @endif >Dijual</option>
+                <option value="terjual" @if($mobil->status == "terjual") selected @endif>Terjual</option>
             </select><br>
             <input type="submit" name="Submit" value="save" class="btn btn-primary">
         </form>

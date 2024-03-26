@@ -9,6 +9,16 @@
 
                 <div class="card-body">
                 <div class="container mb-3">
+                    @if(session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                    @if(session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
                     <h2>Add Pembeli</h2>
                     <form action="pembeli/store" method="POST">
                         @csrf
@@ -43,20 +53,23 @@
                     </tr>
                     @foreach($pembeli as $m)
                         <tr>
-                            <td>{{$m->id_pembeli}}</td>
+                            <td>{{$m->id}}</td>
                             <td>{{$m->nama_pembeli}}</td>
                             <td>{{$m->id_mobil}}</td>
                             <td>{{$m->nomor_telpon}}</td>
                          
                             <td>
                                 <div class="btn-group">
-                                    <a class="btn btn-warning" href="/pembeli/{{$m->id_pembeli}}/edit">Edit</a>
-                                    <form action="/pembeli/{{$m->id_pembeli}}" method="POST">
+                                    <a class="btn btn-warning" href="/pembeli/{{$m->id}}/edit">Edit</a>
+                                    <form action="/pembeli/{{$m->id}}" method="POST">
                                         @csrf
                                         @method('delete')
+
+                                        <input type="hidden" name="id_mobil" value="{{$m->id}}">
+                                        
                                         <input class="btn btn-danger" type="submit" name="Submit" value="delete">
                                     </form>
-                                    <a class="btn btn-warning" href="/pembeli/{{$m->id_pembeli}}/soft">Soft Delete</a>
+                                    
                                 </div>
                             </td>
                         </tr>

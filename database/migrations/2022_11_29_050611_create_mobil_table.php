@@ -20,7 +20,7 @@ return new class extends Migration
             $table->String('harga');
             $table->String('jenis');
             $table->String('tahun');
-            $table->enum('status', ['terjual', 'Dijual']);
+            $table->enum('status', ['terjual', 'dijual']);
             $table->timestamps();
         });
     }

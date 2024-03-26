@@ -18,7 +18,7 @@
     
     
   
-        <h2>Pencarian tidak ditemukan</h2>
+        <h2>Daftar Mobil</h2>
 
         <table border="1" class="table table-hover">
             <tr>
@@ -39,11 +39,10 @@
                     <td>{{$m->nama_penjual}}</td>
                     <td>{{$m->nomor_telpon}}</td>
                     <td>{{$m->alamat}}</td>
-                    
                 </tr>
             @endforeach
         </table>
-    }
+    
     
 </div>
 @endsection

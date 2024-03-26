@@ -9,66 +9,73 @@ use Illuminate\Support\Facades\DB;
 class PembeliController extends Controller
 {
     public function index(){
-        $pembeli  = DB::select('select * from pembeli where softDelete = 0');
+        $pembeli  = DB::select('select * from pembeli');
         return View('pembeli.pembeli',compact(['pembeli']));
     } 
 
     public function store(Request $request){
-        $cek = DB::select('select isSold from mobil where id_mobil = :id_mobil',['id_mobil' => $request->id_mobil]);
+        $cek = DB::select('select status from mobil where id = :id_mobil limit 1',['id_mobil' => $request->id_mobil]);
         
-        if($cek == "Terjual"){
-            return redirect('/pembeli');
-        } else {
-            $request->validate([
-                'nama_pembeli' => 'required',
-                'id_mobil' => 'required',
-                'nomor_telpon' => 'required',
-            
-            ]);
-            DB::insert('INSERT INTO pembeli(nama_pembeli, id_mobil, nomor_telpon) VALUES (:nama_pembeli, :id_mobil, :nomor_telpon)', [
-                'nama_pembeli' => $request->nama_pembeli,
-                'id_mobil' => $request->id_mobil,
-                'nomor_telpon' => $request->nomor_telpon,
+       
+        if(count($cek) == 0){
+            return redirect()->back()->with('error', 'Mobil dengan ID tersebut tidak ada');
+        } else{
+            $mobil = $cek[0];
+            if($mobil->status == "terjual"){
+                return redirect()->back()->with('error', 'Mobil telah terjual, anda tidak bisa membelinya');
+            } else {
+                $request->validate([
+                    'nama_pembeli' => 'required',
+                    'id_mobil' => 'required',
+                    'nomor_telpon' => 'required',
                 
-            ]);
-            DB::table('mobil')->where('id_mobil', $request->id_mobil)->update(['isSold' =>'Terjual']);
+                ]);
+                DB::insert('INSERT INTO pembeli(nama_pembeli, id_mobil, nomor_telpon) VALUES (:nama_pembeli, :id_mobil, :nomor_telpon)', [
+                    'nama_pembeli' => $request->nama_pembeli,
+                    'id_mobil' => $request->id_mobil,
+                    'nomor_telpon' => $request->nomor_telpon,
+                    
+                ]);
+                DB::table('mobil')->where('id', $request->id_mobil)->update(['status' =>'terjual']);
+
+                return redirect('/pembeli')->with('success', 'Mobil berhasil dibeli');
+            }
         }
+     
     }  
 
     public function edit($id_pembeli){
-        $pembeli = pembeli::where('id_pembeli',$id_pembeli)->first();
+        $pembeli = pembeli::where('id',$id_pembeli)->first();
     
         return View('pembeli.edit',compact(['pembeli']));
     }
 
     public function update($id_pembeli, Request $request){
-        $cek = DB::table('mobil')->where('id_mobil', $request->id_mobil)->get();
-        if($cek->isSold == "Terjual"){
-            return redirect('/pembeli');
-        } else {
+       
 
             $request->validate([
                 'nama_pembeli' => 'required',
                 'id_mobil' => 'required',
                 'nomor_telpon' => 'required',
-                'id_kredit' => 'required',
+                
             ]);
-            DB::update('UPDATE pembeli SET nama_pembeli = :nama_pembeli, id_mobil = :id_mobil, nomor_telpon = :nomor_telpon, id_kredit = :id_kredit WHERE id_pembeli = :id_pembeli',[
+            DB::update('UPDATE pembeli SET nama_pembeli = :nama_pembeli, id_mobil = :id_mobil, nomor_telpon = :nomor_telpon WHERE id = :id_pembeli',[
                 'id_pembeli' => $id_pembeli,
                 'nama_pembeli' => $request->nama_pembeli,
                 'id_mobil' => $request->id_mobil,
                 'nomor_telpon' => $request->nomor_telpon,
-                'id_kredit' => $request->id_kredit
+          
             ]);
-        }
-       
+            
+            return redirect('/pembeli')->with('success', 'Data Berhasil dirubah');
         
     }
     public function destroy($id_pembeli){
-       
-        DB::delete('DELETE FROM pembeli WHERE id_pembeli = :id_pembeli', ['id_pembeli' => $id_pembeli]);
-        
-        return redirect('/pembeli');
+        $pembeli = pembeli::where('id',$id_pembeli)->first();
+
+        DB::delete('DELETE FROM pembeli WHERE id = :id_pembeli', ['id_pembeli' => $id_pembeli]);
+        DB::table('mobil')->where('id', $pembeli->id_mobil)->update(['status' =>'Dijual']);
+        return redirect('/pembeli')->with('success', 'Data berhasil dihapus');
     }
     public function soft($id_pembeli){
         DB::table('pembeli')->where('id_pembeli', $id_pembeli)->update(['softDelete' =>'1']);
